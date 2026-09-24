@@ -144,19 +144,19 @@ test should not reach into the other repository's tests.
 
 The Marketplace is free for publishers and free for users to install from.
 
-1. Create a publisher at <https://marketplace.visualstudio.com/manage>. The
-   extension id becomes `<publisher>.<name>` — `moggi.moggi-lsp` for this one,
-   which is why `publisher` in `package.json` has to match an existing
-   publisher.
+1. A publisher exists at <https://marketplace.visualstudio.com/manage>; `publisher`
+   in `package.json` names it. The extension id is `<publisher>.<name>` —
+   `Sascha-OliverProlic.moggi-vscode-plugin` for this manifest — and is fixed
+   once published, so both fields have to be right beforehand.
 2. Create a Personal Access Token with the **Marketplace > Manage** scope (Azure
    DevOps → user settings → Personal access tokens, organisation "all accessible
    organisations"; the publisher page also links to it). PATs expire, so this has
    to be renewed.
 3. Publish:
    ```bash
-   bunx @vscode/vsce login moggi        # paste the PAT once, it is stored for `vsce`
-   bunx @vscode/vsce publish            # bumps nothing: publishes the package.json version
-   bunx @vscode/vsce publish --packagePath moggi-lsp-0.1.0.vsix
+   bunx @vscode/vsce login Sascha-OliverProlic   # paste the PAT once, it is stored for `vsce`
+   bunx @vscode/vsce publish                     # packages and publishes the package.json version
+   bunx @vscode/vsce publish --packagePath ./*.vsix   # or publish a .vsix that was already built
    ```
    Every publish needs a version that is not on the Marketplace yet, so bump
    `version` in `package.json` first.

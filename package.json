@@ -1,9 +1,9 @@
 {
-  "name": "moggi-lsp",
+  "name": "moggi-vscode-plugin",
   "displayName": "Moggi Language Support",
   "description": "Moggi language support: language server, Run, and runtime Test Explorer.",
   "version": "0.1.0",
-  "publisher": "moggi",
+  "publisher": "Sascha-OliverProlic",
   "author": {
     "name": "Sascha-Oliver Prolic",
     "email": "saschaprolic@googlemail.com"
