@@ -1,0 +1,214 @@
+{
+  "name": "moggi-lsp",
+  "displayName": "Moggi Language Support",
+  "description": "Moggi language support: language server, Run, and runtime Test Explorer.",
+  "version": "0.1.0",
+  "publisher": "moggi",
+  "author": {
+    "name": "Sascha-Oliver Prolic",
+    "email": "saschaprolic@googlemail.com"
+  },
+  "license": "MIT",
+  "icon": "media/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/moggi-lang/moggi-vscode-plugin"
+  },
+  "bugs": {
+    "url": "https://github.com/moggi-lang/moggi-vscode-plugin/issues"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Testing",
+    "Snippets"
+  ],
+  "keywords": [
+    "moggi",
+    "mog",
+    "lsp",
+    "functional",
+    "run"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/*.mog"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "moggi",
+        "aliases": [
+          "Moggi",
+          "moggi"
+        ],
+        "extensions": [
+          ".mog"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./media/moggi.svg",
+          "dark": "./media/moggi.svg"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "moggi",
+        "scopeName": "source.moggi",
+        "path": "./syntaxes/moggi.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "moggi.restartServer",
+        "title": "Moggi: Restart Language Server"
+      },
+      {
+        "command": "moggi.showOutput",
+        "title": "Moggi: Show Output"
+      },
+      {
+        "command": "moggi.runFile",
+        "title": "Moggi: Run Current File",
+        "category": "Moggi"
+      }
+    ],
+    "problemMatchers": [
+      {
+        "name": "moggi",
+        "owner": "moggi",
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(?:.*?error:\\s+)(.*?)(?: in )(.*?)(?: on line )(\\d+)$",
+          "message": 1,
+          "file": 2,
+          "line": 3
+        }
+      }
+    ],
+    "configuration": {
+      "title": "Moggi",
+      "properties": {
+        "moggi.path": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the Moggi launcher (a distribution's bin/moggi, or bin/moggi.exe on Windows). Its `bin` directory or the installation root also work. Leave empty to look for one in the workspace folders or on PATH."
+        },
+        "moggi.trace.server": {
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Trace communication between VS Code and the Moggi language server."
+        },
+        "moggi.inlayHints": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show inferred type inlay hints."
+        },
+        "moggi.libPaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Extra library roots passed to the language server as repeated `--lib` flags (stdlib is always available)."
+        },
+        "moggi.testRoot": {
+          "type": "string",
+          "default": "",
+          "description": "Directory of `.mog` fixtures for Test Explorer, relative to the workspace folder. Empty = `tests/backend/runtime` when present; a missing directory yields an empty explorer (no error)."
+        },
+        "moggi.backend": {
+          "type": "string",
+          "enum": [
+            "php",
+            "jvm",
+            "dotnet"
+          ],
+          "default": "php",
+          "description": "Compile backend preference used by the compile task and \"Moggi: Run Current File\"."
+        }
+      }
+    },
+    "taskDefinitions": [
+      {
+        "type": "moggi",
+        "required": [
+          "task"
+        ],
+        "properties": {
+          "task": {
+            "type": "string",
+            "description": "Moggi CLI task to expose as a VS Code task (currently: compile)"
+          }
+        }
+      }
+    ],
+    "semanticTokenScopes": [
+      {
+        "language": "moggi",
+        "scopes": {
+          "keyword": [
+            "keyword.control.moggi"
+          ],
+          "type": [
+            "storage.type.moggi"
+          ],
+          "function": [
+            "entity.name.function.moggi"
+          ],
+          "variable": [
+            "variable.other.moggi"
+          ],
+          "parameter": [
+            "variable.parameter.moggi"
+          ],
+          "string": [
+            "string.quoted.double.moggi"
+          ],
+          "number": [
+            "constant.numeric.moggi"
+          ],
+          "operator": [
+            "keyword.operator.moggi"
+          ],
+          "namespace": [
+            "entity.name.namespace.moggi"
+          ],
+          "comment": [
+            "comment.line.double-dash.moggi",
+            "comment.block.moggi"
+          ],
+          "enumMember": [
+            "entity.name.function.moggi"
+          ]
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -w -p ./",
+    "typecheck": "tsc --noEmit -p ./",
+    "e2e": "bun scripts/e2e-lsp.mjs",
+    "fetch-dist": "bun scripts/fetch-dist.mjs",
+    "package": "bun run compile && vsce package",
+    "vscode:prepublish": "bun run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.80.0",
+    "@vscode/vsce": "^4.0.0",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  }
+}

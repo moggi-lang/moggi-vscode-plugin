@@ -1,0 +1,41 @@
+{
+  "comments": {
+    "lineComment": "--"
+  },
+  "brackets": [
+    ["{", "}"],
+    ["[", "]"],
+    ["(", ")"]
+  ],
+  "autoClosingPairs": [
+    { "open": "{", "close": "}", "notIn": ["string", "comment"] },
+    { "open": "[", "close": "]", "notIn": ["string", "comment"] },
+    { "open": "(", "close": ")", "notIn": ["string", "comment"] },
+    { "open": "\"", "close": "\"", "notIn": ["string"] },
+    { "open": "'", "close": "'", "notIn": ["string", "comment"] }
+  ],
+  "surroundingPairs": [
+    ["{", "}"],
+    ["[", "]"],
+    ["(", ")"],
+    ["\"", "\""],
+    ["'", "'"]
+  ],
+  "indentationRules": {
+    "increaseIndentPattern": "^\\s*(data|newtype|type|class|instance|let|do|where|of|then|else|foreign)\\b.*$",
+    "decreaseIndentPattern": "^\\s*(where|else)\\b.*$"
+  },
+  "folding": {
+    "markers": {
+      "start": "^\\s*--\\s*region\\b",
+      "end": "^\\s*--\\s*endregion\\b"
+    }
+  },
+  "wordPattern": "([A-Za-z_][A-Za-z0-9_']*)|([!#$%&*+./<=>?@\\\\^|~:-]+)",
+  "onEnterRules": [
+    {
+      "beforeText": "^\\s*--\\|.*$",
+      "action": { "indent": "none", "appendText": "-- " }
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+name: release
+
+on:
+  push:
+    tags: ['*']
+    branches: [build]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: oven-sh/setup-bun@v2.2.0
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Name the build
+        id: name
+        run: |
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            tag="${GITHUB_REF_NAME}"
+            channel=release
+          else
+            tag=dev-build
+            channel=dev
+          fi
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          echo "channel=${channel}" >> "$GITHUB_OUTPUT"
+          echo "publishing ${tag} (${channel})"
+
+      - name: The tag and the manifest must agree on the version
+        if: github.ref_type == 'tag'
+        run: |
+          declared="$(python3 -c "import json;print(json.load(open('package.json'))['version'])")"
+          if [ "${declared}" != "${GITHUB_REF_NAME}" ]; then
+            echo "the manifest says ${declared}, the tag says ${GITHUB_REF_NAME}" >&2
+            exit 1
+          fi
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Package the extension
+        run: bun run package
+
+      # A draft is invisible, so the release is created, filled and only then
+      # made public: it is either complete or it does not exist.
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ steps.name.outputs.channel }}" = "release" ]; then
+            gh release create "${{ steps.name.outputs.tag }}" \
+              --draft \
+              --title "${{ steps.name.outputs.tag }}" \
+              --generate-notes
+          else
+            gh release delete "${{ steps.name.outputs.tag }}" --yes --cleanup-tag || true
+            gh release create "${{ steps.name.outputs.tag }}" \
+              --prerelease \
+              --target "${GITHUB_SHA}" \
+              --title "${{ steps.name.outputs.tag }}" \
+              --notes "Dev build of ${GITHUB_SHA}, from the \`build\` branch. Not a release: this tag is moved onto the newest dev build."
+          fi
+
+      - name: Upload the extension and its checksum
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          sha256sum ./*.vsix > SHA256SUMS
+          gh release upload "${{ steps.name.outputs.tag }}" ./*.vsix SHA256SUMS
+
+      - name: Publish
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release edit "${{ steps.name.outputs.tag }}" --draft=false
+
+      # Optional: publishing to the Marketplace needs a Personal Access Token
+      # with the "Marketplace > Manage" scope in the VSCE_PAT secret. Without it
+      # the release is still a complete GitHub release with the .vsix attached.
+      - name: Publish to the VS Code Marketplace
+        if: github.ref_type == 'tag' && env.VSCE_PAT != ''
+        run: |
+          set -euo pipefail
+          version="$(python3 -c "import json;print(json.load(open('package.json'))['version'])")"
+          if [[ "${version}" == *-* ]]; then
+            echo "the Marketplace takes no pre-release versions (${version}): publish it with 'vsce publish --pre-release' instead" >&2
+            exit 1
+          fi
+          bunx @vscode/vsce publish --packagePath "$(ls ./*.vsix | head -1)"

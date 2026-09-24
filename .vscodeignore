@@ -1,0 +1,15 @@
+.vscode/**
+.vscode-test/**
+src/**
+tsconfig.json
+**/*.ts
+**/*.map
+.gitignore
+*.vsix
+scripts/**
+fixtures/**
+.github/**
+# Downloaded distributions, which exist only to run the end-to-end test.
+.dist/**
+# node_modules/**
+media/.gitkeep

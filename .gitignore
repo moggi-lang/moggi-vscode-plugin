@@ -1,0 +1,8 @@
+node_modules/
+out/
+*.vsix
+.vscode-test/
+
+# Moggi distributions: downloaded by the end-to-end test (scripts/fetch-dist.mjs)
+# or placed there by hand to test against a local build.
+.dist/

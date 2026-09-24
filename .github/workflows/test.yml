@@ -1,0 +1,61 @@
+name: test
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      compiler:
+        description: Compiler release to test against (empty = the version pinned in scripts/fetch-dist.mjs)
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: linux
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: oven-sh/setup-bun@v2.2.0
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      # The compiler is a separate repository: the tests download the release they
+      # target and drive its launcher, which carries its own PHP runtime.
+      - name: Download the Moggi distribution
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMPILER_VERSION: ${{ inputs.compiler }}
+          DIST_URL: ${{ vars.MOGGI_DIST_URL }}
+        run: |
+          set -euo pipefail
+          options=()
+          if [ -n "${COMPILER_VERSION}" ]; then
+            options+=(--version "${COMPILER_VERSION}")
+          fi
+          if [ -n "${DIST_URL}" ]; then
+            options+=(--url "${DIST_URL}")
+          fi
+          launcher="$(bun scripts/fetch-dist.mjs "${options[@]}")"
+          echo "MOGGI_LAUNCHER=${launcher}" >> "${GITHUB_ENV}"
+
+      - name: End-to-end against the language server
+        run: bun run e2e
+
+      # The only place the manifest is built as a VS Code extension.
+      - name: Package the extension
+        run: bun run package

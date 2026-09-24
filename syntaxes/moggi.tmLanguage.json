@@ -1,0 +1,130 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Moggi",
+  "scopeName": "source.moggi",
+  "fileTypes": [".mog"],
+  "patterns": [
+    { "include": "#pragma" },
+    { "include": "#doc-comments" },
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#chars" },
+    { "include": "#keywords" },
+    { "include": "#types" },
+    { "include": "#numbers" },
+    { "include": "#operators" }
+  ],
+  "repository": {
+    "pragma": {
+      "patterns": [
+        {
+          "name": "meta.pragma.moggi",
+          "begin": "\\{-#",
+          "end": "#-\\}",
+          "patterns": [
+            {
+              "name": "keyword.other.pragma.moggi",
+              "match": "\\b(LANGUAGE|MINIMAL)\\b"
+            }
+          ]
+        }
+      ]
+    },
+    "doc-comments": {
+      "patterns": [
+        {
+          "name": "comment.block.documentation.moggi",
+          "begin": "\\{-[|^]",
+          "end": "-\\}"
+        },
+        {
+          "name": "comment.line.documentation.moggi",
+          "match": "--[|^].*$"
+        },
+        {
+          "name": "comment.line.documentation.section.moggi",
+          "match": "-- \\* .*$"
+        }
+      ]
+    },
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.block.moggi",
+          "begin": "\\{-",
+          "end": "-\\}"
+        },
+        {
+          "name": "comment.line.double-dash.moggi",
+          "match": "--.*$"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.moggi",
+          "match": "\\b(module|import|qualified|hiding|as|data|newtype|type|class|instance|where|let|in|case|of|do|foreign|backend|pub|abstract|infix|infixl|infixr|deriving|\\_)\\b"
+        },
+        {
+          "name": "keyword.operator.function.moggi",
+          "match": "\\\\"
+        }
+      ]
+    },
+    "types": {
+      "patterns": [
+        {
+          "name": "storage.type.moggi",
+          "match": "\\b[A-Z][A-Za-z0-9_']*\\b"
+        },
+        {
+          "name": "entity.name.tag.moggi",
+          "match": "'[A-Z][A-Za-z0-9_']*\\b"
+        }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.moggi",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.moggi",
+          "match": "\\\\."
+        }
+      ]
+    },
+    "chars": {
+      "name": "string.quoted.single.moggi",
+      "begin": "'",
+      "end": "'",
+      "patterns": [
+        {
+          "name": "constant.character.escape.moggi",
+          "match": "\\\\."
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.float.moggi",
+          "match": "\\b[0-9]+\\.[0-9]+([eE][+-]?[0-9]+)?\\b"
+        },
+        {
+          "name": "constant.numeric.integer.moggi",
+          "match": "\\b[0-9]+\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.moggi",
+          "match": "(::|:::|->|<-|=>|==|/=|<=|>=|&&|\\|\\||\\$|\\.\\.|\\.\\?|\\+\\+|<<|>>|<>|\\.|=|\\+|\\-|\\*|/|%|<|>|!|\\?|@|~|\\^|&|\\||#)"
+        }
+      ]
+    }
+  }
+}
