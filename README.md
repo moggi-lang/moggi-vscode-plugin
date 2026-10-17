@@ -85,6 +85,12 @@ The status bar shows the server state; hovering it names the launcher in use.
 strings, keywords, numbers) while the semantic-token stream from the language
 server loads and covers identifiers and types.
 
+`syntaxes/moggi-descriptor.tmLanguage.json` covers the other file the language
+has: a package's `<name>.moggi` descriptor. It is plain INI — `[section]`
+headers, `key = value` entries, `;`/`#` comments — so it gets its own small
+grammar and its own language id (`moggi-descriptor`) rather than being folded
+into the `.mog` grammar.
+
 ## Development
 
 The extension is built with [bun](https://bun.sh) (not npm/node):
@@ -177,7 +183,9 @@ the extension version is a plain `X.Y.Z`; publish a pre-release channel with
 ├── scripts/fetch-dist.mjs          # Pinned compiler version; downloads a distribution
 ├── fixtures/lsp/                   # The .mog inputs those tests own
 ├── syntaxes/moggi.tmLanguage.json  # TextMate grammar (baseline highlighting)
+├── syntaxes/moggi-descriptor.tmLanguage.json  # TextMate grammar for `*.moggi`
 ├── language-configuration.json     # Brackets, comments, indentation
+├── language-configuration-descriptor.json     # The same, for `*.moggi`
 ├── media/                          # Icons
 └── package.json                    # Extension manifest
 ```

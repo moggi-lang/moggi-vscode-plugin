@@ -50,7 +50,15 @@ jobs:
         run: bun run typecheck
 
       - name: Package the extension
-        run: bun run package
+        run: |
+          set -euo pipefail
+          bun run package
+          shopt -s nullglob
+          vsix=(./*.vsix)
+          if [ "${#vsix[@]}" -ne 1 ]; then
+            echo "expected exactly one .vsix after packaging, found ${#vsix[@]}" >&2
+            exit 1
+          fi
 
       # A draft is invisible, so the release is created, filled and only then
       # made public: it is either complete or it does not exist.

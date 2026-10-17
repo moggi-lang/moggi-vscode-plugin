@@ -1,7 +1,7 @@
 {
-  "name": "moggi-vscode-plugin",
-  "displayName": "Moggi Language Support",
-  "description": "Moggi language support: language server, Run, and runtime Test Explorer.",
+  "name": "moggi",
+  "displayName": "Moggi",
+  "description": "All-in-One Moggi support",
   "version": "0.1.0",
   "publisher": "Sascha-OliverProlic",
   "author": {
@@ -52,6 +52,21 @@
           "light": "./media/moggi.svg",
           "dark": "./media/moggi.svg"
         }
+      },
+      {
+        "id": "moggi-descriptor",
+        "aliases": [
+          "Moggi package descriptor",
+          "moggi-descriptor"
+        ],
+        "extensions": [
+          ".moggi"
+        ],
+        "configuration": "./language-configuration-descriptor.json",
+        "icon": {
+          "light": "./media/moggi.svg",
+          "dark": "./media/moggi.svg"
+        }
       }
     ],
     "grammars": [
@@ -59,6 +74,11 @@
         "language": "moggi",
         "scopeName": "source.moggi",
         "path": "./syntaxes/moggi.tmLanguage.json"
+      },
+      {
+        "language": "moggi-descriptor",
+        "scopeName": "source.moggi.descriptor",
+        "path": "./syntaxes/moggi-descriptor.tmLanguage.json"
       }
     ],
     "commands": [

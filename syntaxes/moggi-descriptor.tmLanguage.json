@@ -1,0 +1,56 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Moggi package descriptor",
+  "scopeName": "source.moggi.descriptor",
+  "fileTypes": [".moggi"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#sections" },
+    { "include": "#entries" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.character.moggi-descriptor",
+          "match": "^\\s*[;#].*$"
+        }
+      ]
+    },
+    "sections": {
+      "patterns": [
+        {
+          "name": "meta.section.moggi-descriptor",
+          "match": "^\\s*\\[([^\\]\\r\\n]+)\\]\\s*$",
+          "captures": {
+            "1": { "name": "entity.name.section.moggi-descriptor" }
+          }
+        }
+      ]
+    },
+    "entries": {
+      "patterns": [
+        {
+          "name": "meta.entry.moggi-descriptor",
+          "match": "^\\s*([A-Za-z][A-Za-z0-9_.-]*)(\\s*)(=)(\\s*)(\"[^\"\\r\\n]*\")(\\s*)([;#].*)?$",
+          "captures": {
+            "1": { "name": "entity.name.tag.moggi-descriptor" },
+            "3": { "name": "keyword.operator.assignment.moggi-descriptor" },
+            "5": { "name": "string.quoted.double.moggi-descriptor" },
+            "7": { "name": "comment.line.character.moggi-descriptor" }
+          }
+        },
+        {
+          "name": "meta.entry.moggi-descriptor",
+          "match": "^\\s*([A-Za-z][A-Za-z0-9_.-]*)(\\s*)(=)(\\s*)([^;#\\r\\n]*?)(\\s*)([;#].*)?$",
+          "captures": {
+            "1": { "name": "entity.name.tag.moggi-descriptor" },
+            "3": { "name": "keyword.operator.assignment.moggi-descriptor" },
+            "5": { "name": "string.unquoted.moggi-descriptor" },
+            "7": { "name": "comment.line.character.moggi-descriptor" }
+          }
+        }
+      ]
+    }
+  }
+}
