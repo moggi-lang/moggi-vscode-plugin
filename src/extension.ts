@@ -396,6 +396,48 @@ function reportMissingLauncher(reason: string): void {
     });
 }
 
+interface LspPosition {
+  line: number;
+  character: number;
+}
+
+interface LspRange {
+  start: LspPosition;
+  end: LspPosition;
+}
+
+interface LspLocation {
+  uri: string | vscode.Uri;
+  range: LspRange | vscode.Range;
+}
+
+/**
+ * Runs the code lens the server labels "N references".
+ *
+ * The lens arrives with `[uri, position, locations]` already filled in, but VS
+ * Code only executes commands the client has registered, so without this the
+ * click was a silent no-op. Hand the arguments to the editor's own peeker so
+ * the widget, the title and the jump targets are the ones users expect.
+ */
+function showReferences(
+  uri: string | vscode.Uri,
+  position: LspPosition,
+  locations: readonly LspLocation[],
+): Thenable<unknown> {
+  const toUri = (target: string | vscode.Uri): vscode.Uri =>
+    typeof target === 'string' ? vscode.Uri.parse(target) : target;
+  const toRange = (range: LspRange | vscode.Range): vscode.Range =>
+    range instanceof vscode.Range
+      ? range
+      : new vscode.Range(range.start.line, range.start.character, range.end.line, range.end.character);
+  return vscode.commands.executeCommand(
+    'editor.action.showReferences',
+    toUri(uri),
+    new vscode.Position(position.line, position.character),
+    locations.map((location) => new vscode.Location(toUri(location.uri), toRange(location.range))),
+  );
+}
+
 export function activate(context: vscode.ExtensionContext): void {
   output = vscode.window.createOutputChannel('Moggi');
   status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
@@ -427,6 +469,7 @@ export function activate(context: vscode.ExtensionContext): void {
       startClient(moggi);
     }),
     vscode.commands.registerCommand('moggi.showOutput', () => output?.show(true)),
+    vscode.commands.registerCommand('moggi.showReferences', showReferences),
     { dispose: () => void client?.stop() },
   );
 
